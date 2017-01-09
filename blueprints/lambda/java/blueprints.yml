@@ -1,0 +1,21 @@
+blueprints:
+
+# Install Java + Maven
+# add-apt-repository -y ppa:openjdk-r/ppa && apt-get update && apt-get -y install openjdk-8-jre maven
+
+# Prepare jar:
+# cd blueprints/lambda/java/example-java-lambda && mvn package
+
+  - stackname: 'sftemplates-example-java-lambda'
+    template: 'lambda.template'
+    Capabilities: 'CAPABILITY_IAM'
+    vars:
+      Bucket: '{output:sftemplates-bucket-stack:BucketName}'
+      JarPath: 'example-java-lambda/target/example-java-lambda-1.0-SNAPSHOT.jar'
+      S3Key: 'lambda/java/example-java-lambda_{md5:{var:JarPath}}.jar'
+    parameters:
+      S3Bucket: '{var:Bucket}'
+      S3Key: '{var:S3Key}'
+    before:
+      - 'if [ -f "{var:JarPath}" ] && [ -z "$(aws s3 ls s3://{var:Bucket}/{var:S3Key})" ]; then aws s3 cp {var:JarPath} s3://{var:Bucket}/{var:S3Key}; fi'
+

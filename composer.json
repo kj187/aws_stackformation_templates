@@ -1,0 +1,5 @@
+{
+    "require": {
+        "aoepeople/stackformation": "^4.3"
+    }
+}

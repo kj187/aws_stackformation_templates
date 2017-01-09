@@ -1,0 +1,6 @@
+blueprints:
+  - stackname: 'sftemplates-bucket-stack'
+    Capabilities: 'CAPABILITY_IAM'
+    template: 'buckets.template'
+    parameters:
+      BucketName: 'aws-stackformation-templates'
