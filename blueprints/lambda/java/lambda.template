@@ -1,7 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Example Java Lambda",
-
   "Parameters": {
     "S3Bucket": {
       "Description": "S3 bucket containing the lambda function sources",
@@ -12,56 +11,49 @@
       "Type": "String"
     }
   },
-
   "Resources": {
     "JavaLambdaExampleRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
+          "Statement": [{ "Effect": "Allow", "Principal": {"Service": ["lambda.amazonaws.com"]}, "Action": ["sts:AssumeRole"] }]
+        },
+        "Path": "/"
+      }
+    },
+    "JavaLambdaExamplePolicy": {
+      "DependsOn": [ "JavaLambdaExampleRole"],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "JavaLambdaExamplePolicy",
+        "Roles": [
+          {"Ref": "JavaLambdaExampleRole"}
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
           "Statement": [
             {
               "Effect": "Allow",
-              "Principal": {"Service": ["lambda.amazonaws.com"]},
-              "Action": ["sts:AssumeRole"]
+              "Action": ["logs:*"],
+              "Resource": ["arn:aws:logs:*:*:*"]
+            },
+            {
+              "Effect": "Allow",
+              "Action": ["s3:*"],
+              "Resource": ["*"]
             }
           ]
-        },
-        "Path": "/",
-        "Policies": [
-          {
-            "PolicyName": "root",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": "arn:aws:logs:*:*:*"
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "s3:GetObject",
-                    "s3:PutObject",
-                    "s3:PutObjectAcl"
-                  ],
-                  "Resource": "arn:aws:s3:::*"
-                }
-              ]
-            }
-          }
-        ]
+        }
       }
     },
     "JavaLambdaExample": {
       "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "JavaLambdaExampleRole",
+        "JavaLambdaExamplePolicy"
+      ],
       "Properties": {
-        "Description": "Example Java Lambda",
         "Code": {
           "S3Bucket": {"Ref": "S3Bucket"},
           "S3Key": {"Ref": "S3Key"}
@@ -75,17 +67,8 @@
           "Variables": { "EnvironmentName":"test" }
         }
       }
-    },
-    "JavaLambdaExamplePermissions": {
-      "Type" : "AWS::Lambda::Permission",
-      "Properties" : {
-        "Action" : "lambda:*",
-        "FunctionName" : { "Fn::GetAtt" : ["JavaLambdaExample", "Arn"] },
-        "Principal" : "*"
-      }
     }
   },
-
   "Outputs": {
     "S3OrderUpdateLineStatusBuildsKey" : {
       "Description" : "S3 key for order update jar",
