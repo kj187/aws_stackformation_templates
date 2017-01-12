@@ -1,0 +1,16 @@
+{
+  "name": "example-nodejs-lambda",
+  "version": "1.0.0",
+  "description": "NodeJS lambda example",
+  "main": "example-nodejs-lambda.js",
+  "scripts": {
+    "test": "node_modules/.bin/lambda-local -l example-nodejs-lambda.js -e event-sample.json -t 300"
+  },
+  "author": "Julian Kleinhans",
+  "devDependencies": {
+    "lambda-local": "0.0.9"
+  },
+  "dependencies": {
+
+  }
+}

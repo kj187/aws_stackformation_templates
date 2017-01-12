@@ -1,0 +1,19 @@
+blueprints:
+  - stackname: 'sftemplates-example-nodejs-lambda'
+    template: 'lambda.template'
+    Capabilities: 'CAPABILITY_IAM'
+    vars:
+      S3Bucket: '{output:sftemplates-bucket-stack:BucketName}'
+      S3Key: 'lambda/java/example-java-lambda.zip'
+    parameters:
+      S3Bucket: '{var:S3Bucket}'
+      S3Key: '{var:S3Key}'
+    before:
+      - 'TMP=$(mktemp -d)'
+      - 'echo "Created temp dir: ${TMP}"'
+      - 'cp example-nodejs-lambda/*.js example-nodejs-lambda/*.json ${TMP}/'
+      - 'cd "${TMP}"'
+      - 'npm install --production'
+      - 'zip -r tmp.zip .'
+      - 'aws s3 cp tmp.zip s3://{var:S3Bucket}/{var:S3Key}'
+      - 'rm -rf "${TMP}"'

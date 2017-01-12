@@ -1,0 +1,82 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Example NodeJS Lambda",
+  "Parameters": {
+    "S3Bucket": {
+      "Description": "S3 bucket containing the lambda function sources",
+      "Type": "String"
+    },
+    "S3Key": {
+      "Description": "S3 bucket key of the lambda function sources",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "NodeJSLambdaExampleRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{ "Effect": "Allow", "Principal": {"Service": ["lambda.amazonaws.com"]}, "Action": ["sts:AssumeRole"] }]
+        },
+        "Path": "/"
+      }
+    },
+    "NodeJSLambdaExamplePolicy": {
+      "DependsOn": [ "NodeJSLambdaExampleRole"],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "NodeJSLambdaExamplePolicy",
+        "Roles": [
+          {"Ref": "NodeJSLambdaExampleRole"}
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["logs:*"],
+              "Resource": ["arn:aws:logs:*:*:*"]
+            },
+            {
+              "Effect": "Allow",
+              "Action": ["s3:*"],
+              "Resource": ["*"]
+            }
+          ]
+        }
+      }
+    },
+    "NodeJSLambdaExample": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "NodeJSLambdaExampleRole",
+        "NodeJSLambdaExamplePolicy"
+      ],
+      "Properties": {
+        "Description": "Example NodeJS Lambda",
+        "Code": {
+          "S3Bucket": {"Ref": "S3Bucket"},
+          "S3Key": {"Ref": "S3Key"}
+        },
+        "Handler": "example-nodejs-lambda.handler",
+        "Runtime": "nodejs4.3",
+        "Timeout": "300",
+        "Role": { "Fn::GetAtt" : ["NodeJSLambdaExampleRole", "Arn"] },
+        "Environment": {
+          "Variables": { "EnvironmentName":"test" }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "NodeJSLambdaExampleS3Key" : {
+      "Description" : "S3 key for lambda",
+      "Value" : { "Ref" : "S3Key" }
+    },
+    "NodeJSLambdaExampleArn": {
+      "Description": "Lambda function",
+      "Value": {"Fn::GetAtt": ["NodeJSLambdaExample", "Arn"]}
+    }
+  }
+}
