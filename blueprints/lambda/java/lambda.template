@@ -54,6 +54,7 @@
         "JavaLambdaExamplePolicy"
       ],
       "Properties": {
+        "Description": "Example Java Lambda",
         "Code": {
           "S3Bucket": {"Ref": "S3Bucket"},
           "S3Key": {"Ref": "S3Key"}
@@ -70,8 +71,8 @@
     }
   },
   "Outputs": {
-    "S3OrderUpdateLineStatusBuildsKey" : {
-      "Description" : "S3 key for order update jar",
+    "JavaLambdaExampleS3Key" : {
+      "Description" : "S3 key for lambda",
       "Value" : { "Ref" : "S3Key" }
     },
     "JavaLambdaExampleArn": {
