@@ -1,0 +1,20 @@
+blueprints:
+  - stackname: 'sftemplates-example-golang-lambda'
+    template: 'lambda.template'
+    Capabilities: 'CAPABILITY_IAM'
+    vars:
+      S3Bucket: '{output:sftemplates-bucket-stack:BucketName}'
+      S3Key: 'lambda/golang/example-golang-lambda.zip'
+    parameters:
+      S3Bucket: '{var:S3Bucket}'
+      S3Key: '{var:S3Key}'
+    before:
+      - 'TMP=$(mktemp -d)'
+      - 'echo "Created temp dir: ${TMP}"'
+      - 'cp example-golang-lambda/*.js example-golang-lambda/*.go ${TMP}/'
+      - 'cd "${TMP}"'
+      - 'export GOPATH="${TMP}"'
+      - 'GOOS=linux GOARCH=amd64 go build -o example-golang-lambda'
+      - 'zip -r tmp.zip .'
+      - 'aws s3 cp tmp.zip s3://{var:S3Bucket}/{var:S3Key}'
+      - 'rm -rf "${TMP}"'

@@ -1,0 +1,82 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Example Golang Lambda",
+  "Parameters": {
+    "S3Bucket": {
+      "Description": "S3 bucket containing the lambda function sources",
+      "Type": "String"
+    },
+    "S3Key": {
+      "Description": "S3 bucket key of the lambda function sources",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "GolangLambdaExampleRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{ "Effect": "Allow", "Principal": {"Service": ["lambda.amazonaws.com"]}, "Action": ["sts:AssumeRole"] }]
+        },
+        "Path": "/"
+      }
+    },
+    "GolangLambdaExamplePolicy": {
+      "DependsOn": [ "GolangLambdaExampleRole"],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "GolangLambdaExamplePolicy",
+        "Roles": [
+          {"Ref": "GolangLambdaExampleRole"}
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["logs:*"],
+              "Resource": ["arn:aws:logs:*:*:*"]
+            },
+            {
+              "Effect": "Allow",
+              "Action": ["s3:*"],
+              "Resource": ["*"]
+            }
+          ]
+        }
+      }
+    },
+    "GolangLambdaExample": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "GolangLambdaExampleRole",
+        "GolangLambdaExamplePolicy"
+      ],
+      "Properties": {
+        "Description": "Example Golang Lambda",
+        "Code": {
+          "S3Bucket": {"Ref": "S3Bucket"},
+          "S3Key": {"Ref": "S3Key"}
+        },
+        "Handler": "example-golang-lambda-wrapper.handler",
+        "Runtime": "nodejs4.3",
+        "Timeout": "300",
+        "Role": { "Fn::GetAtt" : ["GolangLambdaExampleRole", "Arn"] },
+        "Environment": {
+          "Variables": { "EnvironmentName":"test" }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "GolangLambdaExampleS3Key" : {
+      "Description" : "S3 key for lambda",
+      "Value" : { "Ref" : "S3Key" }
+    },
+    "GolangLambdaExampleArn": {
+      "Description": "Lambda function",
+      "Value": {"Fn::GetAtt": ["GolangLambdaExample", "Arn"]}
+    }
+  }
+}
