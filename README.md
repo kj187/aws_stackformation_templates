@@ -9,8 +9,7 @@ $ cd aws_stackformation_templates
 
 ## Usage & Setup
 ```
-$ docker run --rm -it -v $(pwd):/app -w /app stackformation:latest bash
-$ stackformation setup
+$ docker run --rm -it -v $(pwd):/app -w /app stackformation:latest setup
 ```
 
 ## Services
@@ -18,15 +17,13 @@ $ stackformation setup
 
 #### NodeJS
 ```
-$ docker run --rm -it -v $(pwd):/app -w /app kj187/stackformation:latest bash
-$ stackformation blueprint:deploy sftemplates-example-nodejs-lambda
+$ docker run --rm -it -v $(pwd):/app -w /app kj187/stackformation:latest blueprint:deploy sftemplates-example-nodejs-lambda
 ```
 
 #### Java
 TODO: Use java/maven image and compile java binary on the fly
 ```
-$ docker run --rm -it -v $(pwd):/app -w /app kj187/stackformation:latest bash
-$ stackformation blueprint:deploy sftemplates-example-java-lambda
+$ docker run --rm -it -v $(pwd):/app -w /app kj187/stackformation:latest blueprint:deploy sftemplates-example-java-lambda
 ```
 
 #### Python
@@ -39,8 +36,7 @@ TODO
 
 ##### Golang
 ```
-$ docker run --rm -it -v $(pwd):/app -w /app kj187/stackformation:latest-golang bash
-$ stackformation blueprint:deploy sftemplates-example-golang-lambda
+$ docker run --rm -it -v $(pwd):/app -w /app kj187/stackformation:latest-golang blueprint:deploy sftemplates-example-golang-lambda
 ```
 
 ## TODOs
